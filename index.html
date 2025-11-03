@@ -1,0 +1,2479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MayaJob - AI-Powered Job Platform with Trust Verification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Design System Variables */
+        :root {
+            /* Colors */
+            --color-primary: #2563eb;
+            --color-primary-hover: #1d4ed8;
+            --color-primary-light: #dbeafe;
+            --color-secondary: #10b981;
+            --color-secondary-hover: #059669;
+            --color-secondary-light: #d1fae5;
+            --color-warning: #f59e0b;
+            --color-warning-light: #fef3c7;
+            --color-danger: #ef4444;
+            --color-danger-light: #fee2e2;
+            --color-info: #3b82f6;
+            --color-info-light: #dbeafe;
+            
+            /* Background colors */
+            --color-bg-primary: #ffffff;
+            --color-bg-secondary: #f9fafb;
+            --color-bg-tertiary: #f3f4f6;
+            --color-border: #e5e7eb;
+            --color-text-primary: #111827;
+            --color-text-secondary: #6b7280;
+            --color-text-tertiary: #9ca3af;
+            
+            /* Spacing */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-5: 1.25rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-10: 2.5rem;
+            --space-12: 3rem;
+            
+            /* Border radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        [data-theme="dark"] {
+            --color-bg-primary: #1f2937;
+            --color-bg-secondary: #111827;
+            --color-bg-tertiary: #374151;
+            --color-border: #4b5563;
+            --color-text-primary: #f9fafb;
+            --color-text-secondary: #d1d5db;
+            --color-text-tertiary: #9ca3af;
+            --color-primary-light: #1e3a8a;
+            --color-secondary-light: #064e3b;
+            --color-warning-light: #78350f;
+            --color-danger-light: #7f1d1d;
+            --color-info-light: #1e3a8a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: var(--color-bg-primary);
+            border-right: 1px solid var(--color-border);
+            padding: var(--space-6);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .main-content.expanded {
+            margin-left: 0;
+        }
+        
+        .top-nav {
+            background: var(--color-bg-primary);
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--space-4) var(--space-6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .content-area {
+            padding: var(--space-6);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Typography */
+        h1 { font-size: 2rem; font-weight: 700; margin-bottom: var(--space-4); }
+        h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3); }
+        h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-3); }
+        h4 { font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-2); }
+        
+        /* Logo */
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-6);
+        }
+        
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+        
+        /* Navigation */
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            margin-bottom: var(--space-2);
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+        }
+        
+        .nav-link.active {
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+        
+        .btn-secondary {
+            background: var(--color-secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--color-secondary-hover);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--color-bg-secondary);
+        }
+        
+        .btn-sm {
+            padding: var(--space-1) var(--space-3);
+            font-size: 0.8125rem;
+        }
+        
+        .btn-lg {
+            padding: var(--space-3) var(--space-6);
+            font-size: 1rem;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--color-bg-primary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .card-compact {
+            padding: var(--space-4);
+        }
+        
+        /* Job Card */
+        .job-card {
+            background: var(--color-bg-primary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            margin-bottom: var(--space-4);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .job-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-3);
+        }
+        
+        .job-company {
+            display: flex;
+            gap: var(--space-3);
+            align-items: center;
+        }
+        
+        .company-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        
+        .job-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-1);
+        }
+        
+        .job-company-name {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .job-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            margin-bottom: var(--space-3);
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .job-meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+        }
+        
+        .job-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            margin-bottom: var(--space-3);
+        }
+        
+        .skill-tag {
+            padding: var(--space-1) var(--space-3);
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-full);
+            font-size: 0.8125rem;
+            color: var(--color-text-secondary);
+        }
+        
+        .job-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--space-3);
+            border-top: 1px solid var(--color-border);
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-verified {
+            background: var(--color-secondary-light);
+            color: var(--color-secondary);
+        }
+        
+        .badge-pending {
+            background: var(--color-warning-light);
+            color: var(--color-warning);
+        }
+        
+        .badge-match {
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+        }
+        
+        .badge-trust {
+            background: var(--color-info-light);
+            color: var(--color-info);
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+        
+        .stat-card {
+            background: var(--color-bg-primary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: var(--space-1);
+        }
+        
+        .stat-label {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: var(--space-4);
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-2);
+            font-weight: 500;
+            color: var(--color-text-primary);
+            font-size: 0.875rem;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: var(--space-3) var(--space-4);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-primary-light);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Filter Bar */
+        .filter-bar {
+            background: var(--color-bg-primary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            margin-bottom: var(--space-6);
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-3);
+            align-items: center;
+        }
+        
+        .filter-item {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--color-border);
+            transition: 0.4s;
+            border-radius: var(--radius-full);
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--color-primary);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* Profile Section */
+        .profile-header {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+            color: white;
+            margin-bottom: var(--space-6);
+            position: relative;
+        }
+        
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-6);
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: white;
+            color: var(--color-primary);
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .profile-details h2 {
+            margin-bottom: var(--space-2);
+        }
+        
+        .profile-meta {
+            display: flex;
+            gap: var(--space-4);
+            margin-top: var(--space-3);
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--color-primary);
+            transition: width 0.3s ease;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-4);
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--color-bg-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-4);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--color-text-secondary);
+            padding: var(--space-2);
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: var(--space-2);
+            border-bottom: 2px solid var(--color-border);
+            margin-bottom: var(--space-6);
+        }
+        
+        .tab {
+            padding: var(--space-3) var(--space-5);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Landing Page */
+        .landing-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .landing-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-6) var(--space-8);
+            background: var(--color-bg-primary);
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .landing-hero {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-12) var(--space-6);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            margin-bottom: var(--space-8);
+            opacity: 0.95;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: var(--space-4);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .hero-btn {
+            padding: var(--space-4) var(--space-8);
+            font-size: 1.125rem;
+        }
+        
+        /* Auth Forms */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-6);
+            background: var(--color-bg-secondary);
+        }
+        
+        .auth-card {
+            background: var(--color-bg-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            width: 100%;
+            max-width: 450px;
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: var(--space-6);
+        }
+        
+        .role-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-3);
+            margin-bottom: var(--space-6);
+        }
+        
+        .role-option {
+            padding: var(--space-4);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .role-option:hover {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+        
+        .role-option.selected {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+        
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--color-danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        /* Message Thread */
+        .message-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: var(--space-4);
+        }
+        
+        .message-item {
+            padding: var(--space-4);
+            border-bottom: 1px solid var(--color-border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .message-item:hover {
+            background: var(--color-bg-secondary);
+        }
+        
+        .message-item.unread {
+            background: var(--color-primary-light);
+            font-weight: 600;
+        }
+        
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: var(--space-2); }
+        .gap-3 { gap: var(--space-3); }
+        .gap-4 { gap: var(--space-4); }
+        .mb-2 { margin-bottom: var(--space-2); }
+        .mb-3 { margin-bottom: var(--space-3); }
+        .mb-4 { margin-bottom: var(--space-4); }
+        .mb-6 { margin-bottom: var(--space-6); }
+        .mt-4 { margin-top: var(--space-4); }
+        .text-center { text-align: center; }
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+        .font-semibold { font-weight: 600; }
+        .text-secondary { color: var(--color-text-secondary); }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div id="landingPage" class="landing-page">
+        <nav class="landing-nav">
+            <div class="logo">
+                <div class="logo-icon">M</div>
+                <span>MayaJob</span>
+            </div>
+            <div class="flex gap-3">
+                <button class="btn btn-outline" onclick="showLogin()">Login</button>
+                <button class="btn btn-primary" onclick="showRegister()">Sign Up</button>
+            </div>
+        </nav>
+        
+        <div class="landing-hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Your Trusted Path to Career Success</h1>
+                <p class="hero-subtitle">
+                    AI-powered job matching with verified companies. Trust scores, encrypted messaging, 
+                    and personalized learning - all in one platform.
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary btn-lg hero-btn" onclick="showRegister()">Get Started Free</button>
+                    <button class="btn btn-outline btn-lg hero-btn" style="background: rgba(255,255,255,0.2); color: white; border-color: rgba(255,255,255,0.3);" onclick="showLogin()">Explore Platform</button>
+                </div>
+                <div class="mt-4 text-sm">
+                    <p style="opacity: 0.9;">✓ 87,632 Verified Candidates &nbsp; ✓ 18,234 Verified Jobs &nbsp; ✓ 12,456 Successful Placements</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Auth Container -->
+    <div id="authContainer" class="auth-container hidden">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo" style="justify-content: center; margin-bottom: var(--space-4);">
+                    <div class="logo-icon">M</div>
+                    <span>MayaJob</span>
+                </div>
+                <h2 id="authTitle">Welcome Back</h2>
+                <p class="text-secondary">Sign in to continue to your account</p>
+            </div>
+            
+            <div id="roleSelection" class="hidden">
+                <label class="form-label">Select Your Role</label>
+                <div class="role-selector">
+                    <div class="role-option" onclick="selectRole('candidate')">
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">👤</div>
+                        <div class="font-semibold">Candidate</div>
+                        <div class="text-xs text-secondary">Find jobs</div>
+                    </div>
+                    <div class="role-option" onclick="selectRole('company')">
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">🏢</div>
+                        <div class="font-semibold">Company</div>
+                        <div class="text-xs text-secondary">Hire talent</div>
+                    </div>
+                    <div class="role-option" onclick="selectRole('creator')">
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">📚</div>
+                        <div class="font-semibold">Creator</div>
+                        <div class="text-xs text-secondary">Create courses</div>
+                    </div>
+                    <div class="role-option" onclick="selectRole('admin')">
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">⚙️</div>
+                        <div class="font-semibold">Admin</div>
+                        <div class="text-xs text-secondary">Manage platform</div>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: var(--space-4);">Continue</button>
+            </form>
+            
+            <div class="text-center mt-4 text-sm text-secondary">
+                <span id="authSwitchText">Don't have an account?</span>
+                <a href="#" id="authSwitchLink" style="color: var(--color-primary); font-weight: 600;" onclick="toggleAuth(event)">Sign up</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main App -->
+    <div id="mainApp" class="app-container hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">M</div>
+                <span>MayaJob</span>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <!-- Navigation items will be injected by JavaScript -->
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <div id="mainContent" class="main-content">
+            <!-- Top Navigation -->
+            <header class="top-nav">
+                <div class="flex items-center gap-4">
+                    <button class="btn btn-outline btn-sm" onclick="toggleSidebar()">
+                        <span style="font-size: 1.25rem;">☰</span>
+                    </button>
+                    <div>
+                        <input type="text" class="form-input" placeholder="Search jobs, companies, courses..." style="min-width: 300px;">
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button class="btn btn-outline btn-sm" onclick="toggleTheme()">
+                        <span id="themeIcon">🌙</span>
+                    </button>
+                    <button class="btn btn-outline btn-sm" style="position: relative;" onclick="showView('notifications')">
+                        <span style="font-size: 1.125rem;">🔔</span>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="showView('messages')">
+                        <span style="font-size: 1.125rem;">💬</span>
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="logout()">
+                        Logout
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Content Area -->
+            <main class="content-area" id="contentArea">
+                <!-- Dynamic content will be loaded here -->
+            </main>
+        </div>
+    </div>
+    
+    <!-- Job Detail Modal -->
+    <div id="jobDetailModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Job Details</h2>
+                <button class="modal-close" onclick="closeJobModal()">&times;</button>
+            </div>
+            <div id="jobDetailContent">
+                <!-- Job details will be injected here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Application State
+        let currentUser = null;
+        let currentView = 'dashboard';
+        let isRegistering = false;
+        let selectedRole = null;
+        let theme = 'light';
+        
+        // Sample Data
+        const sampleData = {
+            users: {
+                candidates: [
+                    {
+                        id: "c001",
+                        name: "Priya Sharma",
+                        email: "priya.sharma@example.com",
+                        role: "candidate",
+                        skills: ["React", "Node.js", "Python", "Machine Learning"],
+                        experience_years: 3,
+                        location: "Mumbai, India",
+                        verified: true,
+                        trust_score: 85,
+                        profile_completion: 90
+                    },
+                    {
+                        id: "c002",
+                        name: "Rohit Kumar",
+                        email: "rohit.k@example.com",
+                        role: "candidate",
+                        skills: ["Java", "Spring Boot", "AWS", "DevOps"],
+                        experience_years: 5,
+                        location: "Bangalore, India",
+                        verified: true,
+                        trust_score: 92,
+                        profile_completion: 85
+                    }
+                ],
+                companies: [
+                    {
+                        id: "comp001",
+                        name: "TechCorp Solutions",
+                        email: "hr@techcorp.com",
+                        role: "company",
+                        domain: "techcorp.com",
+                        industry: "Technology",
+                        verified: true,
+                        trust_score: 88,
+                        locations: ["Mumbai", "Pune", "Delhi"],
+                        employee_count: "100-500"
+                    }
+                ],
+                creators: [
+                    {
+                        id: "cr001",
+                        name: "Tech Academy",
+                        email: "contact@techacademy.com",
+                        role: "creator",
+                        verified: true,
+                        courses_created: 15,
+                        total_students: 5000
+                    }
+                ],
+                admins: [
+                    {
+                        id: "admin001",
+                        name: "Admin User",
+                        email: "admin@mayajob.com",
+                        role: "admin"
+                    }
+                ]
+            },
+            jobs: [
+                {
+                    id: "job001",
+                    title: "Senior Full Stack Developer",
+                    company_id: "comp001",
+                    company_name: "TechCorp Solutions",
+                    description: "We are looking for a skilled Full Stack Developer to join our team and work on cutting-edge web applications. You will be responsible for developing both client-side and server-side architecture, ensuring the technical feasibility of UI/UX designs, and optimizing applications for maximum speed and scalability.",
+                    skills_required: ["React", "Node.js", "MongoDB", "TypeScript"],
+                    location: "Mumbai, India",
+                    salary_range: "₹12-18 LPA",
+                    job_type: "Full-time",
+                    source: "native",
+                    verification_status: "verified",
+                    trust_score: 90,
+                    freshness_score: 95,
+                    match_percentage: 87,
+                    posted_days_ago: 2,
+                    applicants: 45,
+                    responsibilities: [
+                        "Develop and maintain web applications",
+                        "Collaborate with cross-functional teams",
+                        "Write clean, maintainable code",
+                        "Participate in code reviews"
+                    ],
+                    requirements: [
+                        "3+ years of full stack development experience",
+                        "Strong knowledge of React and Node.js",
+                        "Experience with MongoDB and TypeScript",
+                        "Excellent problem-solving skills"
+                    ]
+                },
+                {
+                    id: "job002",
+                    title: "Machine Learning Engineer",
+                    company_id: "comp002",
+                    company_name: "InnovateLabs",
+                    description: "Join our AI team to build next-generation machine learning models and systems. You will work on cutting-edge ML projects and help shape the future of AI technology.",
+                    skills_required: ["Python", "TensorFlow", "PyTorch", "Machine Learning"],
+                    location: "Bangalore, India",
+                    salary_range: "₹15-25 LPA",
+                    job_type: "Full-time",
+                    source: "aggregated",
+                    verification_status: "verified",
+                    trust_score: 85,
+                    freshness_score: 88,
+                    match_percentage: 93,
+                    posted_days_ago: 1,
+                    applicants: 32,
+                    responsibilities: [
+                        "Design and implement ML models",
+                        "Optimize model performance",
+                        "Deploy models to production",
+                        "Collaborate with data scientists"
+                    ],
+                    requirements: [
+                        "5+ years of ML engineering experience",
+                        "Strong Python skills",
+                        "Experience with TensorFlow or PyTorch",
+                        "PhD or Master's in Computer Science preferred"
+                    ]
+                },
+                {
+                    id: "job003",
+                    title: "Frontend Developer",
+                    company_id: "comp001",
+                    company_name: "TechCorp Solutions",
+                    description: "Create beautiful and responsive user interfaces using modern frontend technologies. Work with designers and backend developers to bring amazing user experiences to life.",
+                    skills_required: ["React", "CSS3", "JavaScript", "HTML5"],
+                    location: "Remote",
+                    salary_range: "₹8-14 LPA",
+                    job_type: "Full-time",
+                    source: "native",
+                    verification_status: "pending",
+                    trust_score: 75,
+                    freshness_score: 92,
+                    match_percentage: 78,
+                    posted_days_ago: 3,
+                    applicants: 67,
+                    responsibilities: [
+                        "Build responsive web interfaces",
+                        "Implement pixel-perfect designs",
+                        "Optimize for performance",
+                        "Write clean, maintainable code"
+                    ],
+                    requirements: [
+                        "2+ years of frontend development",
+                        "Strong React skills",
+                        "Good eye for design",
+                        "Experience with CSS frameworks"
+                    ]
+                }
+            ],
+            courses: [
+                {
+                    id: "course001",
+                    title: "Advanced React Development",
+                    creator: "Tech Academy",
+                    company_approved: true,
+                    duration: "8 weeks",
+                    format: "video",
+                    language: "English",
+                    price: "₹4,999",
+                    rating: 4.7,
+                    students: 1250,
+                    certificate: true,
+                    skills_covered: ["React", "Redux", "TypeScript", "Testing"]
+                },
+                {
+                    id: "course002",
+                    title: "Machine Learning Fundamentals",
+                    creator: "AI Institute",
+                    company_approved: true,
+                    duration: "12 weeks",
+                    format: "interactive",
+                    language: "Hindi",
+                    price: "₹7,999",
+                    rating: 4.8,
+                    students: 890,
+                    certificate: true,
+                    skills_covered: ["Python", "Machine Learning", "Data Science", "Statistics"]
+                }
+            ],
+            applications: [
+                {
+                    id: "app001",
+                    job_id: "job001",
+                    job_title: "Senior Full Stack Developer",
+                    company_name: "TechCorp Solutions",
+                    status: "interview_scheduled",
+                    applied_date: "2025-10-30",
+                    last_update: "2025-11-01",
+                    assessment_score: 88
+                },
+                {
+                    id: "app002",
+                    job_id: "job002",
+                    job_title: "Machine Learning Engineer",
+                    company_name: "InnovateLabs",
+                    status: "under_review",
+                    applied_date: "2025-11-01",
+                    last_update: "2025-11-02",
+                    assessment_score: 92
+                }
+            ],
+            messages: [
+                {
+                    id: "msg001",
+                    from_name: "HR Team - TechCorp",
+                    preview: "Thank you for your application. We'd like to schedule an interview...",
+                    timestamp: "2 hours ago",
+                    unread: true,
+                    trust_level: "verified"
+                },
+                {
+                    id: "msg002",
+                    from_name: "Recruiter - InnovateLabs",
+                    preview: "We've reviewed your profile and are impressed with your ML experience...",
+                    timestamp: "1 day ago",
+                    unread: false,
+                    trust_level: "verified"
+                }
+            ],
+            notifications: [
+                {
+                    type: "application_update",
+                    message: "Your application for Senior Full Stack Developer has been shortlisted",
+                    timestamp: "3 hours ago",
+                    unread: true
+                },
+                {
+                    type: "new_match",
+                    message: "5 new jobs match your preferences",
+                    timestamp: "1 day ago",
+                    unread: true
+                },
+                {
+                    type: "course_recommendation",
+                    message: "Complete Advanced React Development to boost your profile",
+                    timestamp: "2 days ago",
+                    unread: false
+                }
+            ]
+        };
+        
+        // Initialize
+        function init() {
+            // Check for saved theme
+            const savedTheme = theme;
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeIcon').textContent = '☀️';
+            }
+        }
+        
+        // Authentication Functions
+        function showLogin() {
+            document.getElementById('landingPage').classList.add('hidden');
+            document.getElementById('authContainer').classList.remove('hidden');
+            document.getElementById('authTitle').textContent = 'Welcome Back';
+            document.getElementById('roleSelection').classList.add('hidden');
+            document.getElementById('authSwitchText').textContent = "Don't have an account?";
+            document.getElementById('authSwitchLink').textContent = 'Sign up';
+            isRegistering = false;
+        }
+        
+        function showRegister() {
+            document.getElementById('landingPage').classList.add('hidden');
+            document.getElementById('authContainer').classList.remove('hidden');
+            document.getElementById('authTitle').textContent = 'Create Account';
+            document.getElementById('roleSelection').classList.remove('hidden');
+            document.getElementById('authSwitchText').textContent = 'Already have an account?';
+            document.getElementById('authSwitchLink').textContent = 'Sign in';
+            isRegistering = true;
+        }
+        
+        function toggleAuth(e) {
+            e.preventDefault();
+            if (isRegistering) {
+                showLogin();
+            } else {
+                showRegister();
+            }
+        }
+        
+        function selectRole(role) {
+            selectedRole = role;
+            document.querySelectorAll('.role-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            event.target.closest('.role-option').classList.add('selected');
+        }
+        
+        function handleAuth(e) {
+            e.preventDefault();
+            
+            if (isRegistering && !selectedRole) {
+                alert('Please select a role');
+                return;
+            }
+            
+            // Simulate authentication
+            const email = e.target.querySelector('input[type="email"]').value;
+            
+            if (isRegistering) {
+                currentUser = { email, role: selectedRole, name: email.split('@')[0] };
+            } else {
+                // Try to find user in sample data
+                const allUsers = [
+                    ...sampleData.users.candidates,
+                    ...sampleData.users.companies,
+                    ...sampleData.users.creators,
+                    ...sampleData.users.admins
+                ];
+                
+                const user = allUsers.find(u => u.email === email);
+                if (user) {
+                    currentUser = user;
+                } else {
+                    // Default to first candidate
+                    currentUser = sampleData.users.candidates[0];
+                }
+            }
+            
+            // Hide auth, show main app
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            
+            // Setup navigation based on role
+            setupNavigation();
+            
+            // Show dashboard
+            showView('dashboard');
+        }
+        
+        function logout() {
+            currentUser = null;
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('landingPage').classList.remove('hidden');
+        }
+        
+        // Navigation
+        function setupNavigation() {
+            const navMenu = document.getElementById('navMenu');
+            let menuItems = [];
+            
+            if (currentUser.role === 'candidate') {
+                menuItems = [
+                    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+                    { id: 'jobs', icon: '💼', label: 'Browse Jobs' },
+                    { id: 'applications', icon: '📝', label: 'My Applications' },
+                    { id: 'learning', icon: '📚', label: 'Learning Hub' },
+                    { id: 'profile', icon: '👤', label: 'Profile' },
+                    { id: 'messages', icon: '💬', label: 'Messages' },
+                    { id: 'settings', icon: '⚙️', label: 'Settings' }
+                ];
+            } else if (currentUser.role === 'company') {
+                menuItems = [
+                    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+                    { id: 'post-job', icon: '➕', label: 'Post Job' },
+                    { id: 'jobs', icon: '💼', label: 'My Jobs' },
+                    { id: 'candidates', icon: '👥', label: 'Find Candidates' },
+                    { id: 'applications', icon: '📝', label: 'Applications' },
+                    { id: 'analytics', icon: '📈', label: 'Analytics' },
+                    { id: 'admin-panel', icon: '🛡️', label: 'Admin Panel' },
+                    { id: 'settings', icon: '⚙️', label: 'Settings' }
+                ];
+            } else if (currentUser.role === 'creator') {
+                menuItems = [
+                    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+                    { id: 'courses', icon: '📚', label: 'My Courses' },
+                    { id: 'upload-course', icon: '➕', label: 'Upload Course' },
+                    { id: 'analytics', icon: '📈', label: 'Analytics' },
+                    { id: 'earnings', icon: '💰', label: 'Earnings' },
+                    { id: 'settings', icon: '⚙️', label: 'Settings' }
+                ];
+            } else if (currentUser.role === 'admin') {
+                menuItems = [
+                    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+                    { id: 'verification-queue', icon: '✓', label: 'Verification Queue' },
+                    { id: 'moderation', icon: '🛡️', label: 'Moderation' },
+                    { id: 'audit-logs', icon: '📋', label: 'Audit Logs' },
+                    { id: 'trust-scores', icon: '⭐', label: 'Trust Scores' },
+                    { id: 'analytics', icon: '📈', label: 'Platform Analytics' },
+                    { id: 'settings', icon: '⚙️', label: 'Settings' }
+                ];
+            }
+            
+            navMenu.innerHTML = menuItems.map(item => `
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showView('${item.id}')">
+                        <span class="nav-icon">${item.icon}</span>
+                        ${item.label}
+                    </a>
+                </li>
+            `).join('');
+        }
+        
+        function showView(viewId) {
+            currentView = viewId;
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[onclick="showView('${viewId}')"]`)?.classList.add('active');
+            
+            // Load view content
+            const contentArea = document.getElementById('contentArea');
+            
+            switch(viewId) {
+                case 'dashboard':
+                    contentArea.innerHTML = renderDashboard();
+                    break;
+                case 'jobs':
+                    contentArea.innerHTML = renderJobs();
+                    break;
+                case 'applications':
+                    contentArea.innerHTML = renderApplications();
+                    break;
+                case 'learning':
+                    contentArea.innerHTML = renderLearning();
+                    break;
+                case 'profile':
+                    contentArea.innerHTML = renderProfile();
+                    break;
+                case 'messages':
+                    contentArea.innerHTML = renderMessages();
+                    break;
+                case 'notifications':
+                    contentArea.innerHTML = renderNotifications();
+                    break;
+                case 'post-job':
+                    contentArea.innerHTML = renderPostJob();
+                    break;
+                case 'candidates':
+                    contentArea.innerHTML = renderCandidates();
+                    break;
+                case 'analytics':
+                    contentArea.innerHTML = renderAnalytics();
+                    break;
+                case 'admin-panel':
+                    contentArea.innerHTML = renderAdminPanel();
+                    break;
+                case 'verification-queue':
+                    contentArea.innerHTML = renderVerificationQueue();
+                    break;
+                case 'moderation':
+                    contentArea.innerHTML = renderModeration();
+                    break;
+                case 'audit-logs':
+                    contentArea.innerHTML = renderAuditLogs();
+                    break;
+                case 'trust-scores':
+                    contentArea.innerHTML = renderTrustScores();
+                    break;
+                case 'settings':
+                    contentArea.innerHTML = renderSettings();
+                    break;
+                default:
+                    contentArea.innerHTML = '<h1>View not found</h1>';
+            }
+        }
+        
+        // Render Functions
+        function renderDashboard() {
+            if (currentUser.role === 'candidate') {
+                return `
+                    <div class="profile-header">
+                        <div class="profile-info">
+                            <div class="profile-avatar">${currentUser.name.charAt(0)}</div>
+                            <div class="profile-details">
+                                <h2>Welcome back, ${currentUser.name}!</h2>
+                                <p>Your profile is ${currentUser.profile_completion}% complete</p>
+                                <div class="profile-meta">
+                                    <span>✓ Verified User</span>
+                                    <span>⭐ Trust Score: ${currentUser.trust_score}/100</span>
+                                    <span>📍 ${currentUser.location}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: var(--space-4);">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${currentUser.profile_completion}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${sampleData.applications.length}</div>
+                            <div class="stat-label">Active Applications</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${sampleData.jobs.filter(j => j.match_percentage > 80).length}</div>
+                            <div class="stat-label">High Match Jobs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${sampleData.messages.filter(m => m.unread).length}</div>
+                            <div class="stat-label">Unread Messages</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${currentUser.skills.length}</div>
+                            <div class="stat-label">Skills Listed</div>
+                        </div>
+                    </div>
+                    
+                    <h2>Recommended Jobs For You</h2>
+                    <p class="text-secondary mb-4">Based on your skills and preferences</p>
+                    
+                    ${sampleData.jobs.map(job => renderJobCard(job)).join('')}
+                `;
+            } else if (currentUser.role === 'company') {
+                return `
+                    <h1>Company Dashboard</h1>
+                    <p class="text-secondary mb-6">Manage your hiring and recruitment</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Active Job Posts</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">156</div>
+                            <div class="stat-label">Total Applications</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">28</div>
+                            <div class="stat-label">Shortlisted</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${currentUser.trust_score}</div>
+                            <div class="stat-label">Trust Score</div>
+                        </div>
+                    </div>
+                    
+                    <h2>Recent Applications</h2>
+                    <div class="card">
+                        <p class="text-secondary">45 new applications for your job posts</p>
+                        <button class="btn btn-primary mt-4" onclick="showView('applications')">View All Applications</button>
+                    </div>
+                `;
+            } else if (currentUser.role === 'admin') {
+                return `
+                    <h1>Admin Dashboard</h1>
+                    <p class="text-secondary mb-6">Platform overview and management</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">87,632</div>
+                            <div class="stat-label">Total Candidates</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">25,847</div>
+                            <div class="stat-label">Total Jobs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">3,567</div>
+                            <div class="stat-label">Companies</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">12,456</div>
+                            <div class="stat-label">Placements</div>
+                        </div>
+                    </div>
+                    
+                    <h2>Pending Actions</h2>
+                    <div class="card mb-4">
+                        <h4>Verification Queue</h4>
+                        <p class="text-secondary">15 items awaiting verification</p>
+                        <button class="btn btn-primary mt-4" onclick="showView('verification-queue')">Review Queue</button>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>Moderation Queue</h4>
+                        <p class="text-secondary">8 items flagged for review</p>
+                        <button class="btn btn-primary mt-4" onclick="showView('moderation')">Review Flags</button>
+                    </div>
+                `;
+            }
+            return '<h1>Dashboard</h1>';
+        }
+        
+        function renderJobCard(job) {
+            const matchColor = job.match_percentage >= 85 ? 'var(--color-secondary)' : 'var(--color-primary)';
+            
+            return `
+                <div class="job-card" onclick="showJobDetails('${job.id}')">
+                    <div class="job-header">
+                        <div class="job-company">
+                            <div class="company-logo">${job.company_name.charAt(0)}</div>
+                            <div>
+                                <div class="job-title">${job.title}</div>
+                                <div class="job-company-name">${job.company_name}</div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="badge badge-match" style="background: ${matchColor}; color: white;">
+                                ${job.match_percentage}% Match
+                            </div>
+                            ${job.verification_status === 'verified' ? '<div class="badge badge-verified" style="margin-top: var(--space-2);">✓ Verified</div>' : '<div class="badge badge-pending" style="margin-top: var(--space-2);">⏳ Pending</div>'}
+                        </div>
+                    </div>
+                    
+                    <div class="job-meta">
+                        <div class="job-meta-item">📍 ${job.location}</div>
+                        <div class="job-meta-item">💰 ${job.salary_range}</div>
+                        <div class="job-meta-item">🕒 ${job.posted_days_ago}d ago</div>
+                        <div class="job-meta-item">👥 ${job.applicants} applicants</div>
+                        <div class="job-meta-item">⭐ Trust: ${job.trust_score}</div>
+                    </div>
+                    
+                    <div class="job-skills">
+                        ${job.skills_required.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                    </div>
+                    
+                    <div class="job-footer">
+                        <div style="display: flex; gap: var(--space-2);">
+                            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); saveJob('${job.id}')">💾 Save</button>
+                            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); shareJob('${job.id}')">🔗 Share</button>
+                        </div>
+                        <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); applyToJob('${job.id}')">Apply Now</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderJobs() {
+            return `
+                <h1>Browse Jobs</h1>
+                <p class="text-secondary mb-4">Discover opportunities that match your skills</p>
+                
+                <div class="filter-bar">
+                    <div class="filter-item">
+                        <input type="text" class="form-input" placeholder="Search jobs..." style="width: 100%;">
+                    </div>
+                    <div class="filter-item">
+                        <select class="form-select" style="width: 100%;">
+                            <option>All Locations</option>
+                            <option>Mumbai</option>
+                            <option>Bangalore</option>
+                            <option>Delhi</option>
+                            <option>Remote</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <select class="form-select" style="width: 100%;">
+                            <option>All Skills</option>
+                            <option>React</option>
+                            <option>Node.js</option>
+                            <option>Python</option>
+                            <option>Machine Learning</option>
+                        </select>
+                    </div>
+                    <div class="filter-item" style="display: flex; align-items: center; gap: var(--space-2);">
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span style="white-space: nowrap;">Verified Only</span>
+                    </div>
+                </div>
+                
+                ${sampleData.jobs.map(job => renderJobCard(job)).join('')}
+            `;
+        }
+        
+        function renderApplications() {
+            if (currentUser.role === 'candidate') {
+                return `
+                    <h1>My Applications</h1>
+                    <p class="text-secondary mb-6">Track your job application progress</p>
+                    
+                    ${sampleData.applications.map(app => `
+                        <div class="card mb-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <div>
+                                    <h3>${app.job_title}</h3>
+                                    <p class="text-secondary">${app.company_name}</p>
+                                </div>
+                                <div class="badge ${app.status === 'interview_scheduled' ? 'badge-verified' : 'badge-pending'}">
+                                    ${app.status.replace('_', ' ').toUpperCase()}
+                                </div>
+                            </div>
+                            <div class="flex gap-4 text-sm text-secondary mb-3">
+                                <span>Applied: ${app.applied_date}</span>
+                                <span>Last Update: ${app.last_update}</span>
+                                <span>Score: ${app.assessment_score}/100</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="btn btn-sm btn-outline">View Details</button>
+                                <button class="btn btn-sm btn-primary">Send Message</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            } else {
+                return `
+                    <h1>Applications Received</h1>
+                    <p class="text-secondary mb-6">Review and manage candidate applications</p>
+                    
+                    <div class="card mb-4">
+                        <h3>Senior Full Stack Developer</h3>
+                        <p class="text-secondary mb-4">45 applications received</p>
+                        <div class="tabs">
+                            <div class="tab active">All (45)</div>
+                            <div class="tab">Shortlisted (12)</div>
+                            <div class="tab">Interviewed (5)</div>
+                            <div class="tab">Rejected (8)</div>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-secondary">Application management interface would be here</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        function renderLearning() {
+            return `
+                <h1>Learning Hub</h1>
+                <p class="text-secondary mb-6">Upskill with company-approved courses</p>
+                
+                <div class="tabs mb-6">
+                    <div class="tab active">Company-Approved Tracks</div>
+                    <div class="tab">Creator Content</div>
+                    <div class="tab">My Courses</div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-4);">
+                    ${sampleData.courses.map(course => `
+                        <div class="card card-compact">
+                            <div class="mb-3">
+                                ${course.company_approved ? '<div class="badge badge-verified mb-2">✓ Company Approved</div>' : ''}
+                                <h3>${course.title}</h3>
+                                <p class="text-secondary text-sm">${course.creator}</p>
+                            </div>
+                            <div class="mb-3 text-sm text-secondary">
+                                <div class="flex gap-3 mb-2">
+                                    <span>⏱️ ${course.duration}</span>
+                                    <span>🌐 ${course.language}</span>
+                                    <span>⭐ ${course.rating}</span>
+                                </div>
+                                <div>${course.students} students enrolled</div>
+                            </div>
+                            <div class="job-skills mb-3">
+                                ${course.skills_covered.slice(0, 3).map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">${course.price}</span>
+                                <button class="btn btn-sm btn-primary">Enroll Now</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        function renderProfile() {
+            return `
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <div class="profile-avatar">${currentUser.name.charAt(0)}</div>
+                        <div class="profile-details">
+                            <h2>${currentUser.name}</h2>
+                            <p>${currentUser.email}</p>
+                            <div class="profile-meta">
+                                ${currentUser.verified ? '<span>✓ Verified User</span>' : ''}
+                                ${currentUser.trust_score ? `<span>⭐ Trust Score: ${currentUser.trust_score}/100</span>` : ''}
+                                ${currentUser.location ? `<span>📍 ${currentUser.location}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <h3>Profile Completion: ${currentUser.profile_completion || 50}%</h3>
+                    <div class="progress-bar mb-3" style="margin-top: var(--space-3);">
+                        <div class="progress-fill" style="width: ${currentUser.profile_completion || 50}%;"></div>
+                    </div>
+                    <p class="text-secondary">Complete your profile to increase job match accuracy</p>
+                </div>
+                
+                ${currentUser.skills ? `
+                    <div class="card mb-4">
+                        <h3>Skills</h3>
+                        <div class="job-skills" style="margin-top: var(--space-3);">
+                            ${currentUser.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                        </div>
+                        <button class="btn btn-outline btn-sm mt-4">+ Add Skills</button>
+                    </div>
+                ` : ''}
+                
+                <div class="card mb-4">
+                    <h3>Experience</h3>
+                    <p class="text-secondary mt-2">Add your work experience to improve your profile</p>
+                    <button class="btn btn-outline btn-sm mt-4">+ Add Experience</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Privacy Settings</h3>
+                    <p class="text-secondary mt-2">Control who can see your profile information</p>
+                    <div style="margin-top: var(--space-4);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                            <span>Public Profile</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                            <span>Show Contact Info</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>Allow Messages</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderMessages() {
+            return `
+                <h1>Messages</h1>
+                <p class="text-secondary mb-4">End-to-end encrypted conversations</p>
+                
+                <div class="card">
+                    <div class="message-list">
+                        ${sampleData.messages.map(msg => `
+                            <div class="message-item ${msg.unread ? 'unread' : ''}">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4>${msg.from_name}</h4>
+                                        ${msg.trust_level === 'verified' ? '<span class="badge badge-verified" style="margin-top: 4px;">✓ Verified</span>' : ''}
+                                    </div>
+                                    <span class="text-xs text-secondary">${msg.timestamp}</span>
+                                </div>
+                                <p class="text-secondary text-sm">${msg.preview}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--color-border);">
+                        <div class="flex items-center gap-2" style="color: var(--color-text-secondary); font-size: 0.875rem;">
+                            <span>🔒</span>
+                            <span>End-to-end encrypted • Privacy protected</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderNotifications() {
+            return `
+                <h1>Notifications</h1>
+                <p class="text-secondary mb-4">Stay updated with your activity</p>
+                
+                <div class="card">
+                    ${sampleData.notifications.map(notif => `
+                        <div class="message-item ${notif.unread ? 'unread' : ''}">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p>${notif.message}</p>
+                                    <span class="text-xs text-secondary">${notif.timestamp}</span>
+                                </div>
+                                ${notif.unread ? '<div style="width: 8px; height: 8px; background: var(--color-primary); border-radius: 50%;"></div>' : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        function renderPostJob() {
+            return `
+                <h1>Post a Job</h1>
+                <p class="text-secondary mb-6">Create a new job posting with AI assistance</p>
+                
+                <div class="card">
+                    <form onsubmit="handleJobPost(event)">
+                        <div class="form-group">
+                            <label class="form-label">Job Title *</label>
+                            <input type="text" class="form-input" placeholder="e.g. Senior Full Stack Developer" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Job Description *</label>
+                            <textarea class="form-textarea" placeholder="Describe the role, responsibilities, and requirements..." required></textarea>
+                            <button type="button" class="btn btn-outline btn-sm mt-2">✨ AI Optimize</button>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+                            <div class="form-group">
+                                <label class="form-label">Location *</label>
+                                <select class="form-select" required>
+                                    <option value="">Select location</option>
+                                    <option>Mumbai</option>
+                                    <option>Bangalore</option>
+                                    <option>Delhi</option>
+                                    <option>Remote</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Job Type *</label>
+                                <select class="form-select" required>
+                                    <option value="">Select type</option>
+                                    <option>Full-time</option>
+                                    <option>Part-time</option>
+                                    <option>Contract</option>
+                                    <option>Internship</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Salary Range *</label>
+                            <input type="text" class="form-input" placeholder="e.g. ₹12-18 LPA" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Required Skills *</label>
+                            <input type="text" class="form-input" placeholder="Add skills (comma separated)" required>
+                        </div>
+                        
+                        <div style="display: flex; gap: var(--space-3); margin-top: var(--space-6);">
+                            <button type="submit" class="btn btn-primary">Post Job</button>
+                            <button type="button" class="btn btn-outline" onclick="showView('dashboard')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+        
+        function renderCandidates() {
+            return `
+                <h1>Find Candidates</h1>
+                <p class="text-secondary mb-6">AI-powered candidate matching for your roles</p>
+                
+                <div class="filter-bar mb-6">
+                    <div class="filter-item">
+                        <input type="text" class="form-input" placeholder="Search candidates...">
+                    </div>
+                    <div class="filter-item">
+                        <select class="form-select">
+                            <option>All Skills</option>
+                            <option>React</option>
+                            <option>Python</option>
+                            <option>Machine Learning</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <select class="form-select">
+                            <option>All Locations</option>
+                            <option>Mumbai</option>
+                            <option>Bangalore</option>
+                            <option>Delhi</option>
+                        </select>
+                    </div>
+                </div>
+                
+                ${sampleData.users.candidates.map(candidate => `
+                    <div class="card mb-4">
+                        <div class="flex justify-between items-start">
+                            <div class="flex gap-4">
+                                <div class="profile-avatar" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                    ${candidate.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <h3>${candidate.name}</h3>
+                                    <p class="text-secondary">${candidate.location}</p>
+                                    <div class="flex gap-3 mt-2 text-sm">
+                                        <span>📊 ${candidate.experience_years} years exp</span>
+                                        <span>⭐ Trust: ${candidate.trust_score}</span>
+                                        ${candidate.verified ? '<span class="badge badge-verified">✓ Verified</span>' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="badge badge-match">92% Match</div>
+                        </div>
+                        <div class="job-skills mt-4">
+                            ${candidate.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                        </div>
+                        <div class="flex gap-2 mt-4">
+                            <button class="btn btn-sm btn-primary">View Profile</button>
+                            <button class="btn btn-sm btn-outline">Send Message</button>
+                            <button class="btn btn-sm btn-outline">Save</button>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+        
+        function renderAnalytics() {
+            return `
+                <h1>Analytics</h1>
+                <p class="text-secondary mb-6">Platform performance and insights</p>
+                
+                <div class="stats-grid mb-6">
+                    <div class="stat-card">
+                        <div class="stat-value">87,632</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">25,847</div>
+                        <div class="stat-label">Active Jobs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">12,456</div>
+                        <div class="stat-label">Successful Placements</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">82%</div>
+                        <div class="stat-label">Avg Trust Score</div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <h3>Job Performance Trends</h3>
+                    <p class="text-secondary">Chart visualization would appear here</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Candidate Engagement</h3>
+                    <p class="text-secondary">Engagement metrics and statistics</p>
+                </div>
+            `;
+        }
+        
+        function renderAdminPanel() {
+            return `
+                <h1>Admin Panel</h1>
+                <p class="text-secondary mb-6">Platform management and oversight</p>
+                
+                <div class="stats-grid mb-6">
+                    <div class="stat-card">
+                        <div class="stat-value">15</div>
+                        <div class="stat-label">Pending Verifications</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Moderation Queue</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">124</div>
+                        <div class="stat-label">Reports Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">99.2%</div>
+                        <div class="stat-label">Platform Health</div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4">
+                    <button class="btn btn-primary" onclick="showView('verification-queue')">Verification Queue</button>
+                    <button class="btn btn-outline" onclick="showView('moderation')">Moderation</button>
+                    <button class="btn btn-outline" onclick="showView('audit-logs')">Audit Logs</button>
+                </div>
+            `;
+        }
+        
+        function renderVerificationQueue() {
+            return `
+                <h1>Verification Queue</h1>
+                <p class="text-secondary mb-6">Review and verify pending submissions</p>
+                
+                <div class="tabs mb-6">
+                    <div class="tab active">Jobs (3)</div>
+                    <div class="tab">Companies (5)</div>
+                    <div class="tab">Candidates (7)</div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3>Data Scientist</h3>
+                            <p class="text-secondary">DataTech Solutions</p>
+                            <p class="text-xs text-secondary mt-1">Submitted: 2025-11-03</p>
+                        </div>
+                        <div class="badge badge-pending">Pending Review</div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="badge badge-warning" style="background: var(--color-warning-light); color: var(--color-warning);">Salary Verification Needed</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn btn-sm btn-secondary">✓ Approve</button>
+                        <button class="btn btn-sm btn-outline" style="border-color: var(--color-danger); color: var(--color-danger);">✗ Reject</button>
+                        <button class="btn btn-sm btn-outline">View Details</button>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3>StartupXYZ</h3>
+                            <p class="text-secondary">startupxyz.com</p>
+                            <p class="text-xs text-secondary mt-1">Submitted: 2025-11-02</p>
+                        </div>
+                        <div class="badge badge-pending">Domain Verification</div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="badge badge-warning" style="background: var(--color-warning-light); color: var(--color-warning);">New Domain</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn btn-sm btn-secondary">✓ Approve</button>
+                        <button class="btn btn-sm btn-outline" style="border-color: var(--color-danger); color: var(--color-danger);">✗ Reject</button>
+                        <button class="btn btn-sm btn-outline">Request Info</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderModeration() {
+            return `
+                <h1>Content Moderation</h1>
+                <p class="text-secondary mb-6">Review flagged content and user reports</p>
+                
+                <div class="card mb-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3>Flagged Job Posting</h3>
+                            <p class="text-secondary">Senior Developer - ABC Corp</p>
+                            <p class="text-xs text-secondary mt-1">Flagged by AI • 2 hours ago</p>
+                        </div>
+                        <div class="badge badge-warning" style="background: var(--color-danger-light); color: var(--color-danger);">High Priority</div>
+                    </div>
+                    <div class="mb-3">
+                        <p class="text-sm"><strong>Reason:</strong> Suspicious salary range • Possible scam indicators</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn btn-sm btn-secondary">Mark Safe</button>
+                        <button class="btn btn-sm btn-outline" style="border-color: var(--color-danger); color: var(--color-danger);">Remove</button>
+                        <button class="btn btn-sm btn-outline">Contact Poster</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3>User Report</h3>
+                            <p class="text-secondary">Spam messages from user @recruiter123</p>
+                            <p class="text-xs text-secondary mt-1">Reported by 3 users • 5 hours ago</p>
+                        </div>
+                        <div class="badge badge-pending">Under Review</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn btn-sm btn-outline" style="border-color: var(--color-danger); color: var(--color-danger);">Suspend User</button>
+                        <button class="btn btn-sm btn-outline">Warn User</button>
+                        <button class="btn btn-sm btn-outline">Dismiss</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderAuditLogs() {
+            return `
+                <h1>Audit Logs</h1>
+                <p class="text-secondary mb-6">Immutable record of all platform actions</p>
+                
+                <div class="filter-bar mb-6">
+                    <div class="filter-item">
+                        <select class="form-select">
+                            <option>All Actions</option>
+                            <option>User Actions</option>
+                            <option>Admin Actions</option>
+                            <option>System Events</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <input type="date" class="form-input">
+                    </div>
+                    <div class="filter-item">
+                        <input type="text" class="form-input" placeholder="Search logs...">
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div style="font-family: monospace; font-size: 0.8125rem;">
+                        <div style="padding: var(--space-3); border-bottom: 1px solid var(--color-border);">
+                            <div class="flex justify-between">
+                                <span>[2025-11-03 19:00:23]</span>
+                                <span class="badge badge-verified">USER_LOGIN</span>
+                            </div>
+                            <div class="text-secondary mt-1">User: priya.sharma@example.com | IP: 192.168.1.1</div>
+                        </div>
+                        <div style="padding: var(--space-3); border-bottom: 1px solid var(--color-border);">
+                            <div class="flex justify-between">
+                                <span>[2025-11-03 18:45:12]</span>
+                                <span class="badge badge-verified">JOB_VERIFIED</span>
+                            </div>
+                            <div class="text-secondary mt-1">Admin: admin@mayajob.com | Job ID: job001</div>
+                        </div>
+                        <div style="padding: var(--space-3); border-bottom: 1px solid var(--color-border);">
+                            <div class="flex justify-between">
+                                <span>[2025-11-03 18:30:45]</span>
+                                <span class="badge badge-pending">COMPANY_PENDING</span>
+                            </div>
+                            <div class="text-secondary mt-1">Company: StartupXYZ | Domain: startupxyz.com</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderTrustScores() {
+            return `
+                <h1>Trust Score Management</h1>
+                <p class="text-secondary mb-6">Configure trust algorithms and scoring factors</p>
+                
+                <div class="card mb-4">
+                    <h3>Trust Factors Configuration</h3>
+                    <p class="text-secondary mb-4">Adjust weights for trust score calculation</p>
+                    
+                    <div style="display: grid; gap: var(--space-4);">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span>Domain Email Verified</span>
+                                <span class="font-semibold">25%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 25%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span>Employee References</span>
+                                <span class="font-semibold">20%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 20%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span>Job Posting History</span>
+                                <span class="font-semibold">20%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 20%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span>Company Registration</span>
+                                <span class="font-semibold">15%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 15%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary mt-4">Update Configuration</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Recent Trust Score Changes</h3>
+                    <p class="text-secondary">Monitor trust score adjustments across the platform</p>
+                </div>
+            `;
+        }
+        
+        function renderSettings() {
+            return `
+                <h1>Settings</h1>
+                <p class="text-secondary mb-6">Manage your account and preferences</p>
+                
+                <div class="card mb-4">
+                    <h3>Account Information</h3>
+                    <div class="form-group mt-4">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" value="${currentUser.name}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" value="${currentUser.email}" readonly>
+                    </div>
+                    <button class="btn btn-primary">Save Changes</button>
+                </div>
+                
+                <div class="card mb-4">
+                    <h3>Preferences</h3>
+                    <div style="margin-top: var(--space-4);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                            <div>
+                                <div class="font-semibold">Email Notifications</div>
+                                <div class="text-sm text-secondary">Receive updates via email</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                            <div>
+                                <div class="font-semibold">Job Recommendations</div>
+                                <div class="text-sm text-secondary">Get AI-powered job matches</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div class="font-semibold">Dark Mode</div>
+                                <div class="text-sm text-secondary">Use dark theme</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" onchange="toggleTheme()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Privacy & Security</h3>
+                    <div style="margin-top: var(--space-4);">
+                        <button class="btn btn-outline mb-3" style="width: 100%;">Change Password</button>
+                        <button class="btn btn-outline mb-3" style="width: 100%;">Two-Factor Authentication</button>
+                        <button class="btn btn-outline mb-3" style="width: 100%;">Export My Data</button>
+                        <button class="btn btn-outline" style="width: 100%; border-color: var(--color-danger); color: var(--color-danger);">Delete Account</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Job Actions
+        function showJobDetails(jobId) {
+            const job = sampleData.jobs.find(j => j.id === jobId);
+            if (!job) return;
+            
+            const modalContent = document.getElementById('jobDetailContent');
+            modalContent.innerHTML = `
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="company-logo" style="width: 64px; height: 64px; font-size: 1.5rem;">${job.company_name.charAt(0)}</div>
+                    <div>
+                        <h2>${job.title}</h2>
+                        <p class="text-secondary">${job.company_name}</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3 mb-6">
+                    ${job.verification_status === 'verified' ? '<div class="badge badge-verified">✓ Verified Job</div>' : '<div class="badge badge-pending">⏳ Pending</div>'}
+                    <div class="badge badge-match" style="background: var(--color-primary); color: white;">${job.match_percentage}% Match</div>
+                    <div class="badge badge-trust">⭐ Trust: ${job.trust_score}</div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3>Why You Match</h3>
+                    <div style="background: var(--color-bg-secondary); padding: var(--space-4); border-radius: var(--radius-md); margin-top: var(--space-2);">
+                        <p>✓ ${job.match_percentage}% skills alignment with your profile</p>
+                        <p>✓ Location preference match</p>
+                        <p>✓ Experience level fits the requirements</p>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h3>Job Details</h3>
+                    <div class="job-meta" style="margin-top: var(--space-3);">
+                        <div class="job-meta-item">📍 ${job.location}</div>
+                        <div class="job-meta-item">💰 ${job.salary_range}</div>
+                        <div class="job-meta-item">🕒 ${job.posted_days_ago}d ago</div>
+                        <div class="job-meta-item">👥 ${job.applicants} applicants</div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h4>Required Skills</h4>
+                    <div class="job-skills" style="margin-top: var(--space-2);">
+                        ${job.skills_required.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h4>Description</h4>
+                    <p class="text-secondary" style="margin-top: var(--space-2);">${job.description}</p>
+                </div>
+                
+                ${job.responsibilities ? `
+                    <div class="mb-4">
+                        <h4>Responsibilities</h4>
+                        <ul style="margin-left: var(--space-5); margin-top: var(--space-2);">
+                            ${job.responsibilities.map(r => `<li class="text-secondary mb-2">${r}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+                
+                ${job.requirements ? `
+                    <div class="mb-6">
+                        <h4>Requirements</h4>
+                        <ul style="margin-left: var(--space-5); margin-top: var(--space-2);">
+                            ${job.requirements.map(r => `<li class="text-secondary mb-2">${r}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+                
+                <div style="background: var(--color-bg-secondary); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4);">
+                    <div class="flex items-center gap-2 text-sm">
+                        <span>🔍</span>
+                        <span><strong>Source:</strong> ${job.source === 'native' ? 'Posted directly on MayaJob' : 'Aggregated from external source'}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm mt-2">
+                        <span>📊</span>
+                        <span><strong>Freshness Score:</strong> ${job.freshness_score}/100</span>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button class="btn btn-primary btn-lg" onclick="applyToJob('${job.id}')">Apply Now</button>
+                    <button class="btn btn-outline" onclick="saveJob('${job.id}')">💾 Save Job</button>
+                    <button class="btn btn-outline" onclick="shareJob('${job.id}')">🔗 Share</button>
+                </div>
+            `;
+            
+            document.getElementById('jobDetailModal').classList.add('active');
+        }
+        
+        function closeJobModal() {
+            document.getElementById('jobDetailModal').classList.remove('active');
+        }
+        
+        function applyToJob(jobId) {
+            alert('Application submitted successfully! You will receive a confirmation email shortly.');
+            closeJobModal();
+        }
+        
+        function saveJob(jobId) {
+            alert('Job saved to your profile!');
+        }
+        
+        function shareJob(jobId) {
+            alert('Share link copied to clipboard!');
+        }
+        
+        function handleJobPost(e) {
+            e.preventDefault();
+            alert('Job posted successfully! It is now in the verification queue.');
+            showView('dashboard');
+        }
+        
+        // UI Functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            sidebar.classList.toggle('mobile-open');
+            mainContent.classList.toggle('expanded');
+        }
+        
+        function toggleTheme() {
+            theme = theme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            document.getElementById('themeIcon').textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+        
+        // Initialize app
+        init();
+    </script>
+</body>
+</html>
